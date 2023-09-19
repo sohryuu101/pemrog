@@ -65,7 +65,6 @@ translated_sql = translate(perintah)
 
 
 
-
 conn = mysql.connector.connect(host='127.0.0.1', password='akuanakhebat', user='root',database='world')
 
 if conn.is_connected():
