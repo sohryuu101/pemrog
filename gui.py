@@ -59,14 +59,15 @@ class App():
                                           command=self.onClick, 
                                           font=self.font_body, 
                                           corner_radius=30)
-        self.tombol_input.pack(pady=(0, 10), expand=True)
+        self.tombol_input.pack(pady=(0, 10))
         
         # tombol bantuan
         self.tombol_bantuan = ctk.CTkButton(self.input_frame,
                                             text='Butuh Bantuan?',
+                                            command=self.help,
                                             font=self.font_body,
                                             corner_radius=30)
-        self.tombol_bantuan.pack(pady=(0, 10), expand=True)
+        self.tombol_bantuan.pack(pady=(0, 10))
         
     # komponen tabel
         self.columns = ('first_name', 'last_name', 'email')
@@ -126,6 +127,9 @@ class App():
         text = text.upper()
         translated = self.translate(text)
         print(translated)
+        
+    def help(self):
+        showinfo(title='Help', message='List perintah yang dapat digunakan: \n' + '\n'.join(translation_dict))
         
     def onEnter(self, event):
         self.onClick()
