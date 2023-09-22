@@ -4,9 +4,14 @@ import customtkinter as ctk
 from tkinter import ttk
 from Dictionary import translation_dict
 from tkinter.messagebox import showinfo
-
+import mysql.connector
+##################################################
+# set tema dark
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
+
+# membuat koneksi dengan mysql
+conn = mysql.connector.connect(host='127.0.0.1', password='root', user='root',database='pemrog')
 
 class App():
     def __init__(self, window):
@@ -70,31 +75,33 @@ class App():
         self.tombol_bantuan.pack(pady=(0, 10))
         
     # komponen tabel
-        self.columns = ('first_name', 'last_name', 'email')
+        self.columns = ('character_name', 'rarity', 'region', 'vision', 'weapon_type', 'model', 'constellation', 'birthday', 'special_dish', 'affiliation')
         self.tree = ttk.Treeview(self.frame_table,
                                 columns=self.columns,
                                 show='headings',
                                 padding=(10, 10))
         
         # mendefinisikan heading
-        self.tree.heading('first_name', text='First Name')
-        self.tree.heading('last_name', text='Last Name')
-        self.tree.heading('email', text='Email')
+        self.tree.heading('character_name', text='Nama Karakter')
+        self.tree.heading('rarity', text='Rarity')
+        self.tree.heading('region', text='Wilayah Asal')
+        self.tree.heading('vision', text='Vision')
+        self.tree.heading('weapon_type', text='Jenis Senjata')
+        self.tree.heading('model', text='Model') 
+        self.tree.heading('constellation', text='Constellation')
+        self.tree.heading('birthday', text='Tanggal Lahir')
+        self.tree.heading('special_dish', text='Makanan Spesial')
+        self.tree.heading('affiliation', text='Afiliasi')
         
-        # data dummy
-        self.contacts = []
-        for n in range(1, 100):
-            self.contacts.append((f'first {n}', f'last {n}', f'email{n}@example.com'))
+        # menambahkan scrollbar
+        self.hscrollbar = ttk.Scrollbar(self.window, orient=tk.HORIZONTAL, command=self.tree.xview)
+        self.vscrollbar = ttk.Scrollbar(self.window, orient=tk.VERTICAL, command=self.tree.yview)
+        self.tree.configure(yscroll=self.vscrollbar.set)
+        self.tree.configure(xscroll=self.hscrollbar.set)
+        self.hscrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+        self.vscrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
-        # menambahkan data ke treeview
-        for contact in self.contacts:
-            self.tree.insert('', tk.END, values=contact)
-        self.tree.bind('<<TreeviewSelect>>', self.item_selected)
-        
-        # add a scrollbar
-        self.scrollbar = ttk.Scrollbar(self.window, orient=tk.VERTICAL, command=self.tree.yview)
-        self.tree.configure(yscroll=self.scrollbar.set)
-        
+        # menambahkan style pada tabel
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview",
@@ -124,13 +131,19 @@ class App():
     # logika pada tombol
     def onClick(self):
         text = self.perintah.get()
-        text = text.upper()
+        text = text.upper()+';'
         translated = self.translate(text)
-        print(translated)
+        cursor = conn.cursor()
+        cursor.execute(translated)
+        results = cursor.fetchall()
+        
+        for item in results:
+            self.tree.insert('', tk.END, values=item)
+        # self.tree.bind('<<TreeviewSelect>>', self.item_selected)
         
     def help(self):
         showinfo(title='Help', message='List perintah yang dapat digunakan: \n' + '\n'.join(translation_dict))
-        
+
     def onEnter(self, event):
         self.onClick()
         

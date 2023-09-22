@@ -1,5 +1,6 @@
 translation_dict = {
     'PILIH': 'SELECT',
+    '*' : '*',
     'DARI': 'FROM',
     'PERBEDAAN': 'DISTINCT',
     'KEDALAM': 'INTO',
@@ -27,27 +28,20 @@ translation_dict = {
     'MEMPUNYAI': 'HAVING',
     'MENURUN': 'DESC',
     'GRANT': 'GRANT',
-    "OFFSET": "OFFSET",
-    "FETCH": "FETCH",
-    "GABUNG DALAM": "INNER JOIN",
-    "GABUNG KIRI": "LEFT JOIN",
-    "GABUNGKANAN": "RIGHT JOIN",
-    "GABUNGSEMUA": "FULL JOIN",
-    "EKSIS": "EXISTS",
-    "GRANT": "GRANT",
-    "HAPUSPERIZINAN": "REVOKE",
-    "POINAMAN": "SAVEPOINT",
-    "KOMIT": "COMMIT",
-    "PUTARULANG": "ROLLBACK",
-    "HAPUSSEMUAINPUTAN": "TRUNCATE",
-    "SATUKAN": "UNION",
-    "SATUKANSEMUA": "UNION ALL",
-    "KELOMPOKKANBERDASARKAN": "GROUPBY"
+    'OFFSET': 'OFFSET',
+    'FETCH': 'FETCH',
+    'GABUNG DALAM': 'INNER JOIN',
+    'GABUNG KIRI': 'LEFT JOIN',
+    'GABUNGKANAN': 'RIGHT JOIN',
+    'GABUNGSEMUA': 'FULL JOIN',
+    'ADA': 'EXISTS',
+    'GRANT': 'GRANT',
+    'HAPUSPERIZINAN': 'REVOKE',
+    'POINAMAN': 'SAVEPOINT',
+    'KOMIT': 'COMMIT',
+    'PUTARULANG': 'ROLLBACK',
+    'HAPUSSEMUAINPUTAN': 'TRUNCATE',
+    'SATUKAN': 'UNION',
+    'SATUKANSEMUA': 'UNION ALL',
+    'KELOMPOKKANBERDASARKAN': 'GROUPBY'
 }
-
-def translate(text):
-    for key, value in translation_dict.items():
-        text = text.replace(key, value)
-    return text
-
-
