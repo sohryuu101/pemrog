@@ -2,33 +2,26 @@
 import tkinter as tk
 import customtkinter as ctk
 from tkinter import ttk
-from Dictionary import translation_dict
 from tkinter.messagebox import showinfo
-# import mysql.connector
+import csv
+import string
 ##################################################
 # set tema dark
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
 
-# membuat koneksi dengan mysql
-# conn = mysql.connector.connect(host='127.0.0.1', password='root', user='root',database='pemrog')
-
-class App():
+class AppLogin():
     def __init__(self, window):
         super().__init__()
         # settingan awal window
         self.window = window
-        self.window.geometry("500x300")
+        self.window.geometry("750x450")
         self.window.title("SQL Python GUI")
         self.window.bind('<Return>', self.onEnter)
         
-        # frame input
-        self.input_frame = ctk.CTkFrame(window)
-        self.input_frame.pack(fill='both', expand=True)  
-        
-        # frame tabel
-        self.frame_table = ctk.CTkFrame(window)
-        self.frame_table.pack(fill='both', expand=True)
+        # frame login
+        self.login_frame = ctk.CTkFrame(window)
+        self.login_frame.pack(fill='both', expand=True)  
         
     # komponen-komponen
         # font
@@ -36,85 +29,95 @@ class App():
         self.font_body = ctk.CTkFont(family='Consolas', size=10)
         
         #label untuk welcoming
-        self.label_welcome = ctk.CTkLabel(self.input_frame, 
-                                          text='Selamat Datang, User di SQL Mockup!', 
+        self.label_welcome = ctk.CTkLabel(self.login_frame, 
+                                          text='Selamat Datang di SQL Mockup!', 
                                           font=self.font_header)
         self.label_welcome.pack(pady=10)
         
         # label untuk username
-        self.label_input_username = ctk.CTkLabel(self.input_frame, 
+        self.label_input_username = ctk.CTkLabel(self.login_frame, 
                                         text='Masukkan username: ', 
                                         font=self.font_body)
-        self.label_input_username.pack(pady=10)
+        self.label_input_username.pack(pady=(0, 10))
         
         # input username
         self.username = ctk.StringVar()
-        self.input_username = ctk.CTkEntry(self.input_frame, 
-                                  placeholder_text='Username :', 
+        self.input_username = ctk.CTkEntry(self.login_frame,
                                   textvariable=self.username, 
                                   font=self.font_body, 
                                   corner_radius=30)
         self.input_username.pack(pady=(0, 10))
+        
         # label untuk password
-        self.label_input_password = ctk.CTkLabel(self.input_frame, 
+        self.label_input_password = ctk.CTkLabel(self.login_frame, 
                                         text='Masukkan password: ', 
                                         font=self.font_body)
-        self.label_input_password.pack(pady=10)
+        self.label_input_password.pack(pady=(0, 10))
+        
         # input password
         self.password = ctk.StringVar()
-        self.label_input_username.pack(pady=10)
-        self.input_password = ctk.CTkEntry(self.input_frame, 
-                                  placeholder_text='Password', 
-                                  textvariable=self.password, 
+        self.input_password = ctk.CTkEntry(self.login_frame, 
+                                  textvariable=self.password,
+                                  show= '*', 
                                   font=self.font_body, 
                                   corner_radius=30)
         self.input_password.pack(pady=(0, 10))
         
     # tombol
         # tombol masukan
-        self.tombol_input = ctk.CTkButton(self.input_frame, 
-                                          text='Submit', 
+        self.tombol_input = ctk.CTkButton(self.login_frame, 
+                                          text='Kirim', 
                                           command=self.onClick, 
                                           font=self.font_body, 
                                           corner_radius=30)
-        self.tombol_input.pack(pady=(0, 10))
-        # tombol register 
-        self.label_register = ctk.CTkLabel(self.input_frame, 
+        self.tombol_input.pack(pady=10)
+        
+        # Label register 
+        self.label_register = ctk.CTkLabel(self.login_frame, 
                                         text='Belum punya akun?: ', 
                                         font=self.font_body)
-        self.label_register.pack(pady=10)
-        self.tombol_register = ctk.CTkButton(self.input_frame, 
+        self.label_register.pack(pady=(0, 10))
+        
+        # tombol register
+        self.tombol_register = ctk.CTkButton(self.login_frame, 
                                           text='Daftar', 
                                           command=self.onClick, 
                                           font=self.font_body, 
                                           corner_radius=30)
         self.tombol_register.pack(pady=(0, 10))
         
-        
-    def item_selected(self, event):
-        for selected_item in self.tree.selection():
-            item = self.tree.item(selected_item)
-            record = item['values']
-            # show a message
-            showinfo(title='Information', message=','.join(record))
-        
     # logika pada tombol
     def onClick(self):
-        text = self.perintah.get()
-        text = text.upper()+';'
-        translated = self.translate(text)
-        cursor = conn.cursor()
-        cursor.execute(translated)
-        results = cursor.fetchall()
+        username = self.username.get()
+        password = self.password.get()                    
+        salah_login = 0
         
-        for item in results:
-            self.tree.insert('', tk.END, values=item)
-        # self.tree.bind('<<TreeviewSelect>>', self.item_selected)
+        with open('user.csv', mode='r') as file:
+            csvFile = csv.reader(file)
+            for lines in csvFile:
+                dekripsi = self.encrypt_decrypt(lines[1], 3, characters=(string.ascii_lowercase + string.ascii_uppercase),
+                                decrypt=True, shift_type="left")
+                if username in lines[0] and dekripsi == password:
+                    return True
+        
 
     def onEnter(self, event):
         self.onClick()
+        
+    def encrypt_decrypt(self, text, key, characters=string.ascii_lowercase, decrypt=False, shift_type="right"):
+        if key < 0:
+            print("K tidak valid (tidak boleh negatif)")
+            return None
+        n = len(characters)
+        if decrypt == True:
+            key = n - key
+        if shift_type == "left":
+            key = -key
+        rumus_sulap = str.maketrans(characters, characters[key:] + characters[:key])
+        tersulap = text.translate(rumus_sulap)
+        return tersulap
 
 if __name__ == '__main__':
     window = ctk.CTk()
-    app = App(window)
+    app = AppLogin(window)
     window.mainloop()
