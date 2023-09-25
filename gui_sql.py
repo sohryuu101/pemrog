@@ -13,7 +13,7 @@ ctk.set_default_color_theme("dark-blue")
 # membuat koneksi dengan mysql
 conn = mysql.connector.connect(host='127.0.0.1', password='root', user='root',database='pemrog')
 
-class App():
+class AppSQL():
     def __init__(self, window):
         super().__init__()
         # settingan awal window
@@ -37,7 +37,7 @@ class App():
         
         #label untuk welcoming
         self.label_welcome = ctk.CTkLabel(self.input_frame, 
-                                          text='Selamat Datang, User di SQL Mockup!', 
+                                          text='Hai, Selamat (Pagi/Siang/Malam) (Nama User)!', 
                                           font=self.font_header)
         self.label_welcome.pack(pady=10)
         
@@ -60,7 +60,7 @@ class App():
     # tombol
         # tombol masukan
         self.tombol_input = ctk.CTkButton(self.input_frame, 
-                                          text='Submit', 
+                                          text='Kirim', 
                                           command=self.onClick, 
                                           font=self.font_body, 
                                           corner_radius=30)
@@ -154,5 +154,5 @@ class App():
 
 if __name__ == '__main__':
     window = ctk.CTk()
-    app = App(window)
+    app = AppSQL(window)
     window.mainloop()
