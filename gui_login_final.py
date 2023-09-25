@@ -1,27 +1,30 @@
 # importing modules and files
 import tkinter as tk
 import customtkinter as ctk
-from tkinter import ttk
-from tkinter.messagebox import showinfo
 import csv
 import string
+from tkinter.messagebox import showerror, askyesno, showinfo, showwarning
+from gui_sql_final import AppSQL
+from gui_register import AppRegister
 ##################################################
 # set tema dark
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
 
-class AppLogin():
-    def __init__(self, window):
+class AppLogin(ctk.CTk):
+    def __init__(self):
         super().__init__()
-        # settingan awal window
-        self.window = window
-        self.window.geometry("750x450")
-        self.window.title("SQL Python GUI")
-        self.window.bind('<Return>', self.onEnter)
+        # settingan awal 
+        self.geometry("750x450")
+        self.title("SQL Python GUI")
+        self.bind('<Return>', self.onEnter)
+        
+        # variabel awal
+        self.salah_login = 0
         
         # frame login
-        self.login_frame = ctk.CTkFrame(window)
-        self.login_frame.pack(fill='both', expand=True)  
+        self.login_frame = ctk.CTkFrame(self)
+        self.login_frame.pack(fill='both', expand=True, anchor=tk.CENTER)  
         
     # komponen-komponen
         # font
@@ -29,34 +32,28 @@ class AppLogin():
         self.font_body = ctk.CTkFont(family='Consolas', size=10)
         
         #label untuk welcoming
-        self.label_welcome = ctk.CTkLabel(self.login_frame, 
+        self.label_welcome = ctk.CTkLabel(master=self.login_frame, 
                                           text='Selamat Datang di SQL Mockup!', 
                                           font=self.font_header)
         self.label_welcome.pack(pady=10)
         
         # label untuk username
-        self.label_input_username = ctk.CTkLabel(self.login_frame, 
-                                        text='Masukkan username: ', 
+        self.label_input_username = ctk.CTkLabel(master=self.login_frame, 
+                                        text='Log in ke akun anda: ', 
                                         font=self.font_body)
         self.label_input_username.pack(pady=(0, 10))
         
         # input username
         self.username = ctk.StringVar()
-        self.input_username = ctk.CTkEntry(self.login_frame,
+        self.input_username = ctk.CTkEntry(master=self.login_frame, placeholder_text='Username',
                                   textvariable=self.username, 
                                   font=self.font_body, 
                                   corner_radius=30)
         self.input_username.pack(pady=(0, 10))
         
-        # label untuk password
-        self.label_input_password = ctk.CTkLabel(self.login_frame, 
-                                        text='Masukkan password: ', 
-                                        font=self.font_body)
-        self.label_input_password.pack(pady=(0, 10))
-        
         # input password
         self.password = ctk.StringVar()
-        self.input_password = ctk.CTkEntry(self.login_frame, 
+        self.input_password = ctk.CTkEntry(master=self.login_frame, placeholder_text='Password', 
                                   textvariable=self.password,
                                   show= '*', 
                                   font=self.font_body, 
@@ -65,7 +62,7 @@ class AppLogin():
         
     # tombol
         # tombol masukan
-        self.tombol_input = ctk.CTkButton(self.login_frame, 
+        self.tombol_input = ctk.CTkButton(master=self.login_frame, 
                                           text='Kirim', 
                                           command=self.onClick, 
                                           font=self.font_body, 
@@ -73,15 +70,15 @@ class AppLogin():
         self.tombol_input.pack(pady=10)
         
         # Label register 
-        self.label_register = ctk.CTkLabel(self.login_frame, 
+        self.label_register = ctk.CTkLabel(master=self.login_frame, 
                                         text='Belum punya akun?: ', 
                                         font=self.font_body)
         self.label_register.pack(pady=(0, 10))
         
         # tombol register
-        self.tombol_register = ctk.CTkButton(self.login_frame, 
+        self.tombol_register = ctk.CTkButton(master=self.login_frame, 
                                           text='Daftar', 
-                                          command=self.onClick, 
+                                          command=self.register, 
                                           font=self.font_body, 
                                           corner_radius=30)
         self.tombol_register.pack(pady=(0, 10))
@@ -89,8 +86,10 @@ class AppLogin():
     # logika pada tombol
     def onClick(self):
         username = self.username.get()
-        password = self.password.get()                    
-        salah_login = 0
+        password = self.password.get()
+        
+        if username or password == "":
+            showwarning(title='Error', message='Username dan password tidak boleh kosong!')                    
         
         with open('user.csv', mode='r') as file:
             csvFile = csv.reader(file)
@@ -98,7 +97,21 @@ class AppLogin():
                 dekripsi = self.encrypt_decrypt(lines[1], 3, characters=(string.ascii_lowercase + string.ascii_uppercase),
                                 decrypt=True, shift_type="left")
                 if username in lines[0] and dekripsi == password:
-                    return True
+                    self.destroy()
+                    app2 = AppSQL(uname=username, pwd=password)
+                    app2.mainloop()
+                else:
+                    self.salah_login += 1
+                    showerror(title='Error', message='username/password salah!')
+                    
+                    if self.salah_login == 3:
+                        answer = askyesno(title='Error', message="Anda telah mencapai batas maksimum login! Atau anda ingin membuat akun baru?")
+                        if answer == True:
+                            self.register()
+                        else:
+                            showinfo(title='Info', message="Selamat Tinggal!")
+                            self.destroy()
+
         
     def onEnter(self, event):
         self.onClick()
@@ -115,8 +128,12 @@ class AppLogin():
         rumus_sulap = str.maketrans(characters, characters[key:] + characters[:key])
         tersulap = text.translate(rumus_sulap)
         return tersulap
+    
+    def register(self):
+        self.destroy()
+        app3 = AppRegister()
+        app3.mainloop()
 
 if __name__ == '__main__':
-    window = ctk.CTk()
-    app = AppLogin(window)
-    window.mainloop()
+    app = AppLogin()
+    app.mainloop()

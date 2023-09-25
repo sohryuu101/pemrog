@@ -1,27 +1,24 @@
 # importing modules and files
-import tkinter as tk
 import customtkinter as ctk
-from tkinter import ttk
-from tkinter.messagebox import showinfo
 import csv
 import string
+from tkinter.messagebox import showinfo, showwarning
 ##################################################
 # set tema dark
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
 
-class AppLogin():
-    def __init__(self, window):
+class AppRegister(ctk.CTk):
+    def __init__(self):
         super().__init__()
-        # settingan awal window
-        self.window = window
-        self.window.geometry("750x450")
-        self.window.title("SQL Python GUI")
-        self.window.bind('<Return>', self.onEnter)
+        # settingan awal 
+        self.geometry("750x450")
+        self.title("SQL Python GUI")
+        self.bind('<Return>', self.onEnter)
         
-        # frame login
-        self.login_frame = ctk.CTkFrame(window)
-        self.login_frame.pack(fill='both', expand=True)  
+        # frame register
+        self.register_frame = ctk.CTkFrame(self)
+        self.register_frame.pack(fill='both', expand=True)  
         
     # komponen-komponen
         # font
@@ -29,34 +26,34 @@ class AppLogin():
         self.font_body = ctk.CTkFont(family='Consolas', size=10)
         
         #label untuk welcoming
-        self.label_welcome = ctk.CTkLabel(self.login_frame, 
-                                          text='Selamat Datang di SQL Mockup!', 
+        self.label_welcome = ctk.CTkLabel(master=self.register_frame, 
+                                          text='Buat akun baru!', 
                                           font=self.font_header)
         self.label_welcome.pack(pady=10)
         
         # label untuk username
-        self.label_input_username = ctk.CTkLabel(self.login_frame, 
-                                        text='Masukkan username: ', 
+        self.label_input_username = ctk.CTkLabel(master=self.register_frame, 
+                                        text='Masukkan username baru: ', 
                                         font=self.font_body)
         self.label_input_username.pack(pady=(0, 10))
         
         # input username
         self.username = ctk.StringVar()
-        self.input_username = ctk.CTkEntry(self.login_frame,
+        self.input_username = ctk.CTkEntry(master=self.register_frame, placeholder_text='Username',
                                   textvariable=self.username, 
                                   font=self.font_body, 
                                   corner_radius=30)
         self.input_username.pack(pady=(0, 10))
         
-        # label untuk password
-        self.label_input_password = ctk.CTkLabel(self.login_frame, 
-                                        text='Masukkan password: ', 
+        # label untuk pass
+        self.label_input_password = ctk.CTkLabel(master=self.register_frame, 
+                                        text='Masukkan password baru: ', 
                                         font=self.font_body)
         self.label_input_password.pack(pady=(0, 10))
         
         # input password
         self.password = ctk.StringVar()
-        self.input_password = ctk.CTkEntry(self.login_frame, 
+        self.input_password = ctk.CTkEntry(master=self.register_frame, placeholder_text='Password', 
                                   textvariable=self.password,
                                   show= '*', 
                                   font=self.font_body, 
@@ -65,44 +62,36 @@ class AppLogin():
         
     # tombol
         # tombol masukan
-        self.tombol_input = ctk.CTkButton(self.login_frame, 
+        self.tombol_input = ctk.CTkButton(master=self.register_frame, 
                                           text='Kirim', 
                                           command=self.onClick, 
                                           font=self.font_body, 
                                           corner_radius=30)
         self.tombol_input.pack(pady=10)
         
-        # Label register 
-        self.label_register = ctk.CTkLabel(self.login_frame, 
-                                        text='Belum punya akun?: ', 
-                                        font=self.font_body)
-        self.label_register.pack(pady=(0, 10))
-        
-        # tombol register
-        self.tombol_register = ctk.CTkButton(self.login_frame, 
-                                          text='Daftar', 
-                                          command=self.onClick, 
-                                          font=self.font_body, 
-                                          corner_radius=30)
-        self.tombol_register.pack(pady=(0, 10))
-        
     # logika pada tombol
     def onClick(self):
         username = self.username.get()
-        password = self.password.get()                    
-        salah_login = 0
+        password = self.password.get()   
+        
+        if username or password == "":
+            showwarning(title='Error', message='Username dan password tidak boleh kosong!')                   
         
         with open('user.csv', mode='r') as file:
             csvFile = csv.reader(file)
             for lines in csvFile:
-                dekripsi = self.encrypt_decrypt(lines[1], 3, characters=(string.ascii_lowercase + string.ascii_uppercase),
-                                decrypt=True, shift_type="left")
-                if username in lines[0] and dekripsi == password:
-                    return True
-        
-    def onEnter(self, event):
-        self.onClick()
-        
+                if username in lines[0]:
+                    showwarning(title='Error', message='Username sudah digunakan!')
+                
+                else:
+                    enkripsi = self.encrypt_decrypt(password, 3, characters=(string.ascii_lowercase + string.ascii_uppercase),
+                                    decrypt=False, shift_type="left")
+                    Akun_Baru = [username, enkripsi]
+                    with open('user.csv', 'a') as csvfile:
+                        csvwriter = csv.writer(csvfile)
+                        csvwriter.writerow(Akun_Baru)
+                        showinfo(title='Info', message='Akun berhasil terdaftar!')
+                        
     def encrypt_decrypt(self, text, key, characters=string.ascii_lowercase, decrypt=False, shift_type="right"):
         if key < 0:
             print("K tidak valid (tidak boleh negatif)")
@@ -116,7 +105,10 @@ class AppLogin():
         tersulap = text.translate(rumus_sulap)
         return tersulap
 
+        
+    def onEnter(self, event):
+        self.onClick()
+    
 if __name__ == '__main__':
-    window = ctk.CTk()
-    app = AppLogin(window)
-    window.mainloop()
+    app = AppRegister()
+    app.mainloop()
