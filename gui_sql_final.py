@@ -11,53 +11,53 @@ import datetime
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
 
-class AppSQL(ctk.CTk):
-    def __init__(self, uname='', pwd=''):
+class AppSQL(ctk.CTk): # membuat class AppSQL
+    def __init__(self, uname='', pwd=''): # menerima parameter username dan password
         super().__init__()
         # settingan awal 
         # membuat koneksi dengan mysql
-        self.conn = mysql.connector.connect(host='127.0.0.1', password=pwd, user=uname,database='pemrog')
-        self.geometry("750x450")
-        self.title("SQL Python GUI")
-        self.bind('<Return>', self.onEnter)
-        self.uname = uname
+        self.conn = mysql.connector.connect(host='127.0.0.1', password=pwd, user=uname,database='pemrog') # konek ke mysql
+        self.geometry("750x450") # ukuran layar
+        self.title("SQL Python GUI") # judul
+        self.bind('<Return>', self.onEnter) # binding tombol enter dengan fungsi onEnter
+        self.uname = uname # username
         
         # frame input
-        self.input_frame = ctk.CTkFrame(self)
-        self.input_frame.pack(fill='both', expand=True)  
+        self.input_frame = ctk.CTkFrame(self) # inisiasi frame untuk input
+        self.input_frame.pack(fill='both', expand=True)  # menampilkan frame
         
         # frame tabel
-        self.frame_table = ctk.CTkFrame(self)
-        self.frame_table.pack(fill='both', expand=True)
+        self.frame_table = ctk.CTkFrame(self) # inisiasi frame untuk tabel
+        self.frame_table.pack(fill='both', expand=True) # menampilkan frame
         
     # komponen-komponen
         # font
-        self.font_header = ctk.CTkFont(family='Consolas', size=20)
-        self.font_body = ctk.CTkFont(family='Consolas', size=10)
+        self.font_header = ctk.CTkFont(family='Consolas', size=20) # font untuk header
+        self.font_body = ctk.CTkFont(family='Consolas', size=10) # font untuk body
         
         #label untuk welcoming
-        waktu = self.waktu()
+        waktu = self.waktu() # waktu
         self.label_welcome = ctk.CTkLabel(self.input_frame, 
                                           text=f'Hai, Selamat {waktu} {uname}!', 
-                                          font=self.font_header)
-        self.label_welcome.pack(pady=10)
+                                          font=self.font_header) # label untuk welcome berdasarkan nama user dan waktu
+        self.label_welcome.pack(pady=10) # menampilkan label
         
         # label untuk input
         self.label_input = ctk.CTkLabel(self.input_frame, 
                                         text='Masukkan Perintah: ', 
-                                        font=self.font_body)
-        self.label_input.pack(pady=10)
+                                        font=self.font_body) # label untuk input
+        self.label_input.pack(pady=10) # menampilkan label
         
         # input
-        self.perintah = ctk.StringVar()
+        self.perintah = ctk.StringVar() # variabel untuk input
         self.input = ctk.CTkEntry(self.input_frame, 
                                   placeholder_text='Masukkan Perintah',
                                   width=200, 
                                   textvariable=self.perintah, 
                                   font=self.font_body, 
-                                  corner_radius=30)
+                                  corner_radius=30) # entry box perintah
         
-        self.input.pack(pady=(0, 10))
+        self.input.pack(pady=(0, 10)) # menampilkan
         
     # tombol
         # tombol masukan
@@ -65,23 +65,23 @@ class AppSQL(ctk.CTk):
                                           text='Kirim', 
                                           command=self.onClick, 
                                           font=self.font_body, 
-                                          corner_radius=30)
-        self.tombol_input.pack(pady=(0, 10))
+                                          corner_radius=30) # tombol kirim
+        self.tombol_input.pack(pady=(0, 10)) # menampilkan
         
         # tombol bantuan
         self.tombol_bantuan = ctk.CTkButton(self.input_frame,
                                             text='Butuh Bantuan?',
                                             command=self.help,
                                             font=self.font_body,
-                                            corner_radius=30)
-        self.tombol_bantuan.pack(pady=(0, 10))
+                                            corner_radius=30) # tombol bantuan
+        self.tombol_bantuan.pack(pady=(0, 10)) # menampilkan
         
     # komponen tabel
-        self.columns = ('character_name', 'rarity', 'region', 'vision', 'weapon_type', 'model', 'constellation', 'birthday', 'special_dish', 'affiliation')
+        self.columns = ('character_name', 'rarity', 'region', 'vision', 'weapon_type', 'model', 'constellation', 'birthday', 'special_dish', 'affiliation') # inisiase kolom tabel
         self.tree = ttk.Treeview(self.frame_table,
                                 columns=self.columns,
                                 show='headings',
-                                padding=(10, 10))
+                                padding=(10, 10)) # inisiasi tabel
         
         # mendefinisikan heading
         self.tree.heading('character_name', text='Nama Karakter')
@@ -96,8 +96,8 @@ class AppSQL(ctk.CTk):
         self.tree.heading('affiliation', text='Afiliasi')
         
         # menambahkan scrollbar
-        self.hscrollbar = ttk.Scrollbar(self, orient=tk.HORIZONTAL, command=self.tree.xview)
-        self.vscrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
+        self.hscrollbar = ttk.Scrollbar(self, orient=tk.HORIZONTAL, command=self.tree.xview) # scrollbar horizontal
+        self.vscrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview) # scrollbar vertical
         self.tree.configure(yscroll=self.vscrollbar.set)
         self.tree.configure(xscroll=self.hscrollbar.set)
         # self.hscrollbar.pack(side=tk.BOTTOM, fill=tk.X)
@@ -123,7 +123,7 @@ class AppSQL(ctk.CTk):
         
         self.tree.pack()
         
-    def item_selected(self, event):
+    def item_selected(self, event): # fungsi jika item pada tabel dipilih
         for selected_item in self.tree.selection():
             item = self.tree.item(selected_item)
             record = item['values']
