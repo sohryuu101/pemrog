@@ -5,7 +5,7 @@ import csv
 import string
 from tkinter.messagebox import showerror, askyesno, showinfo, showwarning
 from gui_sql_final import AppSQL
-from gui_register import AppRegister
+from gui_register_final import AppRegister
 ##################################################
 # set tema dark
 ctk.set_appearance_mode("dark")
@@ -88,7 +88,7 @@ class AppLogin(ctk.CTk):
         username = self.username.get()
         password = self.password.get()
         
-        if username or password == "":
+        if username == None or password == None:
             showwarning(title='Error', message='Username dan password tidak boleh kosong!')                    
         
         with open('user.csv', mode='r') as file:
@@ -96,11 +96,13 @@ class AppLogin(ctk.CTk):
             for lines in csvFile:
                 dekripsi = self.encrypt_decrypt(lines[1], 3, characters=(string.ascii_lowercase + string.ascii_uppercase),
                                 decrypt=True, shift_type="left")
+                
                 if username in lines[0] and dekripsi == password:
                     self.destroy()
                     app2 = AppSQL(uname=username, pwd=password)
                     app2.mainloop()
-                else:
+                    return
+                elif username in lines[0] and dekripsi != password:
                     self.salah_login += 1
                     showerror(title='Error', message='username/password salah!')
                     
@@ -111,6 +113,8 @@ class AppLogin(ctk.CTk):
                         else:
                             showinfo(title='Info', message="Selamat Tinggal!")
                             self.destroy()
+                elif username not in lines[0]:
+                    showerror(title='Error', message='username tidak ditemukan!')
 
         
     def onEnter(self, event):

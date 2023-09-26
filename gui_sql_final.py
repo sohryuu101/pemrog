@@ -2,8 +2,8 @@
 import tkinter as tk
 import customtkinter as ctk
 from tkinter import ttk
-from Dictionary import translation_dict
-from tkinter.messagebox import showinfo
+from Dictionary import translation_dict_root, translation_dict_user
+from tkinter.messagebox import showinfo, showerror
 import mysql.connector
 import datetime
 ##################################################
@@ -20,6 +20,7 @@ class AppSQL(ctk.CTk):
         self.geometry("750x450")
         self.title("SQL Python GUI")
         self.bind('<Return>', self.onEnter)
+        self.uname = uname
         
         # frame input
         self.input_frame = ctk.CTkFrame(self)
@@ -99,8 +100,8 @@ class AppSQL(ctk.CTk):
         self.vscrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
         self.tree.configure(yscroll=self.vscrollbar.set)
         self.tree.configure(xscroll=self.hscrollbar.set)
-        self.hscrollbar.pack(side=tk.BOTTOM, fill=tk.X)
-        self.vscrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        # self.hscrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+        # self.vscrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
         # menambahkan style pada tabel
         style = ttk.Style()
@@ -134,6 +135,12 @@ class AppSQL(ctk.CTk):
         text = self.perintah.get()
         text = text.upper()+';'
         translated = self.translate(text)
+        
+        if self.uname != 'root':
+            if translated not in translation_dict_user:
+                showerror(title='Error', message='Perintah tidak ditemukan')
+                return
+        
         cursor = self.conn.cursor()
         cursor.execute(translated)
         results = cursor.fetchall()
@@ -143,13 +150,16 @@ class AppSQL(ctk.CTk):
         # self.tree.bind('<<TreeviewSelect>>', self.item_selected)
         
     def help(self):
-        showinfo(title='Help', message='List perintah yang dapat digunakan: \n' + '\n'.join(translation_dict))
+        if self.uname == 'root':
+            showinfo(title='Help', message='List perintah yang dapat digunakan: \n' + '\n'.join(translation_dict_root))
+        else:
+            showinfo(title='Help', message='List perintah yang dapat digunakan: \n' + '\n'.join(translation_dict_user))
 
     def onEnter(self, event):
         self.onClick()
         
     def translate(self, text):
-        for key, value in translation_dict.items():
+        for key, value in translation_dict_root.items():
             text = text.replace(key, value)
         return text
     
