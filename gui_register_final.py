@@ -127,6 +127,6 @@ class AppRegister(ctk.CTk): # class untuk window register
     def back(self): # fungsi untuk ke window login (harusnya)
         self.destroy()
     
-if __name__ == '__main__':
-    app = AppRegister()
-    app.mainloop()
+# if __name__ == '__main__':
+#     app = AppRegister()
+#     app.mainloop()

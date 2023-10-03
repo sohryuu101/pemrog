@@ -77,10 +77,6 @@ class AppSQL(ctk.CTk): # membuat class AppSQL
         self.tombol_bantuan.pack(pady=(0, 10)) # menampilkan
         
     # komponen tabel
-        # self.columns = ('character_name', 'rarity', 'region', 'vision', 'weapon_type', 'model', 'constellation', 'birthday', 'special_dish', 'affiliation', 
-        #                 'voice_eng', 'voice_cn', 'voice_jp', 'voice_kr', 'release_date', 'ascension', 'ascension_specialty')
-        
-        # self.columns = []
         self.tree = ttk.Treeview(self.frame_table) # inisiasi tabel
         
         # menambahkan scrollbar
@@ -88,7 +84,7 @@ class AppSQL(ctk.CTk): # membuat class AppSQL
         self.vscrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview) # scrollbar vertical
         self.tree.configure(yscroll=self.vscrollbar.set)
         self.tree.configure(xscroll=self.hscrollbar.set)
-        # self.hscrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+        self.hscrollbar.pack(side=tk.BOTTOM, fill=tk.X)
         
         # menambahkan style pada tabel
         style = ttk.Style()
@@ -108,7 +104,6 @@ class AppSQL(ctk.CTk): # membuat class AppSQL
         style.map("Treeview.Heading",
                     background=[('active', '#3484F0')])
         
-        # self.tree.pack()
         
     def item_selected(self, event): # fungsi jika item pada tabel dipilih
         for selected_item in self.tree.selection():
@@ -164,6 +159,6 @@ class AppSQL(ctk.CTk): # membuat class AppSQL
         else:
             return "Malam"
 
-if __name__ == '__main__':
-    app = AppSQL()
-    app.mainloop()
+# if __name__ == '__main__':
+#     app = AppSQL()
+#     app.mainloop()
