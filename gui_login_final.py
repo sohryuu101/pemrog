@@ -90,22 +90,22 @@ class AppLogin(ctk.CTk): # membuat turunan kelas dari ctk.CTk
         username = self.username.get() # mendapatkan username dari masukan
         password = self.password.get() # mendapatkan password dari masukan
         
-        if username == None or password == None: # jika password kosong keluarkan pesan
+        if username == '' or password == '': # jika password kosong keluarkan pesan
             showwarning(title='Error', message='Username dan password tidak boleh kosong!')
-            return # tidak menjalankan kode selanjutnya                  
-        
+            return # tidak menjalankan kode selanjutnya
+                       
         with open('user.csv', mode='r') as file: # membuka file csv
             csvFile = csv.reader(file) # membaca file csv
             for lines in csvFile: # untuk setiap baris di file csv
                 dekripsi = encrypt_decrypt(lines[1], 3, characters=(string.ascii_lowercase + string.ascii_uppercase),
                                 decrypt=True, shift_type="left")
                 
-                if username in lines[0] and dekripsi == password: # untuk setiap baris di file csv jika username dan pass matching dengan di csv
+                if username == lines[0] and dekripsi == password: # untuk setiap baris di file csv jika username dan pass matching dengan di csv
                     self.destroy() # hentikan aplikasi login
                     app2 = AppSQL(uname=username, pwd=password)
                     app2.mainloop() # menjalankan aplikasi SQL
                     return
-                elif username in lines[0] and dekripsi != password: # jika username ada tapi password salah
+                elif username == lines[0] and dekripsi != password: # jika username ada tapi password salah
                     self.salah_login += 1 # attempt login
                     showerror(title='Error', message='username/password salah!')
                     
@@ -116,8 +116,12 @@ class AppLogin(ctk.CTk): # membuat turunan kelas dari ctk.CTk
                         else:
                             showinfo(title='Info', message="Selamat Tinggal!")
                             self.destroy()
-                elif username not in lines[0]: # jika username tidak ada
-                    showerror(title='Error', message='username tidak ditemukan!')
+                            return
+                    return
+                
+            #  jika username tidak ada
+            showerror(title='Error', message='username tidak ditemukan!')
+            return
 
         
     def onEnter(self, event): # jika tombol enter ditekan

@@ -49,12 +49,7 @@ translation_dict_root = {
     'KELOMPOKKAN BERDASARKAN': 'GROUPBY'
 }
 
-translation_dict_user = {
-    'PILIH': 'SELECT',
-    '*' : '*',
-    'HAPUS': 'DELETE',
-    'MASUKKAN': 'INSERT'
-}
+heading = ['character_name', 'rarity', 'region', 'vision', 'weapon_type', 'model', 'constellation', 'birthday', 'special_dish', 'affiliation']
 
 def encrypt_decrypt(text, key, characters=string.ascii_lowercase, decrypt=False, shift_type="right"):
     if key < 0:

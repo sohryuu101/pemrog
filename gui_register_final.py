@@ -99,18 +99,16 @@ class AppRegister(ctk.CTk): # class untuk window register
         with open('user.csv', mode='r') as file: # membuka file csv
             csvFile = csv.reader(file) # membaca file csv
             for lines in csvFile: # untuk setiap baris di file csv
-                if username in lines[0]: # jika username ada
+                if username == lines[0]: # jika username ada
                     showwarning(title='Error', message='Username sudah digunakan!')
                     double = True
-                    break
+                    return
                 
         if double == False: # jika username belum ada
             comm1 = f"CREATE USER '{username}'@'localhost' IDENTIFIED BY '{password}';"
-            comm2 = f"GRANT PRIVILEGE ON pemrog.genshin TO '{username}'@'localhost';"
-            comm3 = f"GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO '{username}'@'localhost' WITH GRANT OPTION;"
-            comm4 = f"FLUSH PRIVILEGES;"
-            comm5 = f"GRANT SELECT, INSERT, DELETE ON pemrog.* TO {username}@localhost;"
-            comm = comm1 + "\n" + comm2 + "\n" + comm3 + "\n" + comm4 + "\n" + comm5
+            comm2 = f"GRANT ALL PRIVILEGES on pemrog.genshin TO '{username}'@'localhost';"
+            comm3 = f"FLUSH PRIVILEGES;"
+            comm = comm1 + "\n" + comm2 + "\n" + comm3
             cursor = conn.cursor()
             cursor.execute(comm) # eksekusi semua command yang diberikan kepada mysql yang berisi
                                 # membuat user dan password, menambahkan privilege, akses perintah

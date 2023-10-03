@@ -2,8 +2,8 @@
 import tkinter as tk
 import customtkinter as ctk
 from tkinter import ttk
-from Dictionary import translation_dict_root, translation_dict_user
-from tkinter.messagebox import showinfo, showerror
+from Dictionary import translation_dict_root    
+from tkinter.messagebox import showinfo
 import mysql.connector
 import datetime
 ##################################################
@@ -77,23 +77,11 @@ class AppSQL(ctk.CTk): # membuat class AppSQL
         self.tombol_bantuan.pack(pady=(0, 10)) # menampilkan
         
     # komponen tabel
-        self.columns = ('character_name', 'rarity', 'region', 'vision', 'weapon_type', 'model', 'constellation', 'birthday', 'special_dish', 'affiliation') # inisiase kolom tabel
-        self.tree = ttk.Treeview(self.frame_table,
-                                columns=self.columns,
-                                show='headings',
-                                padding=(10, 10)) # inisiasi tabel
+        # self.columns = ('character_name', 'rarity', 'region', 'vision', 'weapon_type', 'model', 'constellation', 'birthday', 'special_dish', 'affiliation', 
+        #                 'voice_eng', 'voice_cn', 'voice_jp', 'voice_kr', 'release_date', 'ascension', 'ascension_specialty')
         
-        # mendefinisikan heading
-        self.tree.heading('character_name', text='Nama Karakter')
-        self.tree.heading('rarity', text='Rarity')
-        self.tree.heading('region', text='Wilayah Asal')
-        self.tree.heading('vision', text='Vision')
-        self.tree.heading('weapon_type', text='Jenis Senjata')
-        self.tree.heading('model', text='Model') 
-        self.tree.heading('constellation', text='Constellation')
-        self.tree.heading('birthday', text='Tanggal Lahir')
-        self.tree.heading('special_dish', text='Makanan Spesial')
-        self.tree.heading('affiliation', text='Afiliasi')
+        # self.columns = []
+        self.tree = ttk.Treeview(self.frame_table) # inisiasi tabel
         
         # menambahkan scrollbar
         self.hscrollbar = ttk.Scrollbar(self, orient=tk.HORIZONTAL, command=self.tree.xview) # scrollbar horizontal
@@ -101,7 +89,6 @@ class AppSQL(ctk.CTk): # membuat class AppSQL
         self.tree.configure(yscroll=self.vscrollbar.set)
         self.tree.configure(xscroll=self.hscrollbar.set)
         # self.hscrollbar.pack(side=tk.BOTTOM, fill=tk.X)
-        # self.vscrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
         # menambahkan style pada tabel
         style = ttk.Style()
@@ -121,7 +108,7 @@ class AppSQL(ctk.CTk): # membuat class AppSQL
         style.map("Treeview.Heading",
                     background=[('active', '#3484F0')])
         
-        self.tree.pack()
+        # self.tree.pack()
         
     def item_selected(self, event): # fungsi jika item pada tabel dipilih
         for selected_item in self.tree.selection():
@@ -132,28 +119,31 @@ class AppSQL(ctk.CTk): # membuat class AppSQL
         
     # logika pada tombol
     def onClick(self):
+        self.tree.destroy()
         text = self.perintah.get()
         text = text.upper()+';'
         translated = self.translate(text)
-        
-        if self.uname != 'root':
-            if translated not in translation_dict_user:
-                showerror(title='Error', message='Perintah tidak ditemukan')
-                return
-        
         cursor = self.conn.cursor()
         cursor.execute(translated)
+        kolom = [desc[0] for desc in cursor.description]
         results = cursor.fetchall()
+        
+        self.tree = ttk.Treeview(self.frame_table,
+                                columns=kolom,
+                                show='headings',
+                                padding=(10, 10)) # inisiasi tabel
+        
+        for item in kolom:
+            self.tree.heading(item, text=item)
         
         for item in results:
             self.tree.insert('', tk.END, values=item)
-        # self.tree.bind('<<TreeviewSelect>>', self.item_selected)
+            
+        self.tree.pack()
+        self.tree.bind('<<TreeviewSelect>>', self.item_selected)
         
     def help(self):
-        if self.uname == 'root':
-            showinfo(title='Help', message='List perintah yang dapat digunakan: \n' + '\n'.join(translation_dict_root))
-        else:
-            showinfo(title='Help', message='List perintah yang dapat digunakan: \n' + '\n'.join(translation_dict_user))
+        showinfo(title='Help', message='List perintah yang dapat digunakan: \n' + '\n'.join(translation_dict_root))
 
     def onEnter(self, event):
         self.onClick()
